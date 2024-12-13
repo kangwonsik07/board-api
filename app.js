@@ -3,9 +3,10 @@ const path = require('path')
 const morgan = require('morgan')
 require('dotenv').config()
 const cors = require('cors')
-const { sequelize } = require('./models')
 const app = express()
 
+const authRouter = require('./routes/auth')
+const { sequelize } = require('./models')
 app.set('port', process.env.PORT || 8002)
 
 sequelize
@@ -19,7 +20,7 @@ sequelize
 
 app.use(
    cors({
-      origin: 'http://localhost:3000', // 특정 주소만 request 허용
+      origin: 'http://localhost:3001', // 특정 주소만 request 허용
       credentials: true, // 쿠키, 세션 등 인증 정보 허용
    })
 )
@@ -27,6 +28,8 @@ app.use(morgan('dev'))
 app.use(express.static(path.join(__dirname, 'uploads')))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+
+app.use('/', authRouter)
 
 app.options('*', cors())
 app.listen(app.get('port'), () => {
